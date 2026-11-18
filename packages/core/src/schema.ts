@@ -10,7 +10,8 @@ export const decision=z.object({
 const fields={title:text,source:decision.shape.source,evidence:decision.shape.evidence}
 const claim=z.object({...fields,kind:z.literal('claim'),claims:z.array(z.object({id:text,label:text,evidence:text.optional()})).min(1)})
 const defaults=z.object({...fields,kind:z.literal('defaults'),defaults:z.array(z.object({id:text,label:text,value:text})).min(1)})
-export const itemSchema=z.union([decision,claim,defaults])
+const html=z.object({...fields,kind:z.literal('html'),html:z.string().max(200000),expects:z.object({type:z.literal('object'),properties:z.record(z.string(),z.unknown())}).passthrough()})
+export const itemSchema=z.union([decision,claim,defaults,html])
 export const tools={
   item_update:z.object({review_id:z.uuid(),item_id:z.uuid(),patch:z.record(z.string(),z.unknown()),reply:text,parent_id:z.uuid().optional()}),
   review_open:z.object({title:text,items:z.array(itemSchema).min(1).max(100),mode:z.enum(['workspace','session']).optional(),ttl_hours:z.number().positive().max(87600).optional()}),

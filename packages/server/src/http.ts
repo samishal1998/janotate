@@ -6,6 +6,7 @@ import {setTimeout as delay} from 'node:timers/promises'
 import {StreamableHTTPServerTransport} from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import {openStore} from '../../core/src/store.ts'
 import {submission} from '../../core/src/schema.ts'
+import {frames} from './frames.ts'
 import {mcp} from './mcp.ts'
 import {Hono} from 'hono'
 import {getRequestListener} from '@hono/node-server'
@@ -40,13 +41,20 @@ export async function start(data,port,session,assets){
     const latest=store.result(id)
     return latest.state==='open'?{state:'pending',answered:counts().answered,total:counts().total}:latest
   }
+  const frame=await frames(locate,()=>origin)
   const app=new Hono()
   app.onError((err,c)=>c.json({error:err.message},400))
   app.get('/health',c=>c.json({service:'Janotate',pid:process.pid}))
   app.get('/api/review/:id',c=>c.json(locate(c.req.param('id')).get(c.req.param('id'))))
+  app.get('/api/review/:id/items/:key/frame-status',c=>c.json({message:frame.status(c.req.param('key'))}))
   app.post('/api/review/:id/items/:key/:action',async c=>{
     if(c.req.header('origin')!==origin)return c.text('Forbidden',403)
     const {id,key,action}=c.req.param(),input=await c.req.json(),store=locate(id)
+    if(action==='frame'){
+      const review=store.get(id),item=review.items.find(i=>i.id===key)
+      if(review.state!=='open'||item?.kind!=='html')return c.notFound()
+      return c.json({url:frame.issue(id,item)})
+    }
     if(action==='comments')store.addComment(id,key,input)
     else if(action==='answer')store.save(id,key,input===null?null:submission.parse({[key]:input})[key])
     else return c.notFound()
@@ -81,5 +89,5 @@ export async function start(data,port,session,assets){
   })
   await new Promise((ok,fail)=>{http.once('error',fail);http.listen(port,'127.0.0.1',ok)})
   origin='http://127.0.0.1:'+http.address().port
-  return {origin,close(){http.closeAllConnections();http.close();temporary.close();rmSync(sessionDir,{recursive:true});workspace.close()}}
+  return {origin,close(){frame.close();http.closeAllConnections();http.close();temporary.close();rmSync(sessionDir,{recursive:true});workspace.close()}}
 }

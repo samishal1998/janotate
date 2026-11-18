@@ -70,7 +70,12 @@ export function openStore(path:string) {
     }
     db.prepare("UPDATE item SET value_json=?,status=?,source_by='user',source_basis='stated' WHERE id=?").run(JSON.stringify(value),status,key)
   }
-  return {get,result,save,addComment,update(id,key,patch,reply,parent){
+  function acceptHtml(id,key,revision,value){
+    const item=current(id,key)
+    if(item.kind!=='html'||item.revision!==revision)throw Error('invalid_items: revision')
+    db.prepare("UPDATE item SET value_json=?,status='confirmed',source_by='user',source_basis='stated' WHERE id=?").run(JSON.stringify(value),key)
+  }
+  return {get,result,save,acceptHtml,addComment,update(id,key,patch,reply,parent){
     return atomic(()=>{
       const old=current(id,key)
       const body=db.prepare('SELECT body_json FROM item WHERE id=?').get(key).body_json

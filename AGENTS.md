@@ -5,3 +5,5 @@ The PRD in docs/spec governs behavior. Keep core storage and review rules in pac
 Use Node 24. Run npm ci, then npm run build before integration and browser tests. Run npm test for all implemented layers. Use node --test tests/store.test.ts for the store. Use node --test tests/review.test.ts for HTTP/stdio integration, executable docs examples and browser restart coverage. The browser tests need the Chromium revision listed by Playwright. Run npm run build for docs and local link checks.
 
 Use GitButler for version control. Keep commits scoped to each phase and record the actual gate command and outcome in STATUS.md.
+
+Run node --test tests/security.test.ts for the real Chromium sandbox gate.
