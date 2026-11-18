@@ -1,3 +1,4 @@
 :root {color-scheme:light dark;--paper:Canvas;--ink:CanvasText;--line:GrayText;--logo:none; font:100%/1.5 system-ui,sans-serif;color:var(--ink);background:var(--paper)}
 body {max-width:48rem;margin:auto;padding:1.5rem} header {display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:1rem}
 header strong:before {content:var(--logo)} fieldset {margin:1rem 0;padding:1rem;border:1px solid var(--line)} label {display:block;padding:.75rem} small {display:block;margin-left:1.6rem} button,input {font:inherit} button {padding:.4rem .9rem} section+section {margin-top:2rem}
+.board {display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:.8rem} pre {overflow:auto} iframe {width:100%;min-height:12rem}

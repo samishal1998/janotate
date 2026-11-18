@@ -5,7 +5,7 @@
 | 1 Core loop | npm run build built UI, server and seven static pages. npm test passed both tests, including HTTP open, Chromium submission, server restart and identical stdio review_get response. |
 | 2 Discussion | npm run build and npm test passed (3 tests), including a browser option comment, MCP item_update reply and a two-item isolation test. |
 | 3 Dynamic HTML | node --test --test-timeout=45000 tests/security.test.ts passed in Chromium. Checked parent storage and cookies, policy-blocked network and cross-item post, top navigation, schema rejection, unknown field removal, accepted form and fetch, and replay rejection. |
-| 4 Diagrams and diffs | Pending |
+| 4 Diagrams and diffs | node --test tests/catalog.test.ts passed. The CLI entrypoint review returned node and hunk anchors; a 200-hunk diff started collapsed and the last hunk opened within the test deadline. |
 | 5 Workspace and hosting | Pending |
 
 ## Decisions
@@ -24,3 +24,5 @@ Offline npm metadata identified the latest cached releases as MCP SDK 1.32.2, Ho
 ## Open verification
 
 The ten-minute wait loop, CI lint/type checks and full release packaging verification are outstanding.
+
+Mermaid package metadata and tarballs were unavailable offline. The native diagram renderer accepts a documented subset of Mermaid flowcharts with named nodes and arrows.

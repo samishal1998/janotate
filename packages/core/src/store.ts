@@ -1,3 +1,4 @@
+import {payloads,catalogAnswer} from './catalog.ts'
 import {itemSchema,commentInput} from './schema.ts'
 import {DatabaseSync} from 'node:sqlite'
 import {randomUUID} from 'node:crypto'
@@ -61,6 +62,9 @@ export function openStore(path:string) {
       if(custom ? item.allow_other===false || !answer.other.trim() : !item.options.some(o=>o.id===answer.option))throw Error('invalid_items: answer')
       value=custom?answer.other:answer.option
       if(recommended && (custom || recommended.id!==value))status='corrected'
+    }else if(Object.hasOwn(payloads,item.kind)){
+      value=answer.values
+      if(!value||!catalogAnswer(item,value))throw Error('invalid_items: values')
     }else{
       value=answer.values
       const entries=item.kind==='claim'?item.claims:item.defaults

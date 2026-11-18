@@ -1,10 +1,11 @@
+import {Catalog} from './catalog'
 import {HtmlFrame} from './frame'
 import React,{useState} from 'react'
 export function Item({item:i,review,post}){
   const [draft,setDraft]=useState(null),[body,setBody]=useState(''),[anchor,setAnchor]=useState({type:'item'}),[pending,setPending]=useState(false)
   const threads=review.comments.filter(c=>c.item_id===i.id)
   const saved=i.value===undefined?null:i.kind==='decision'?(i.options.some(o=>o.id===i.value)?{option:i.value}:{other:i.value}):{values:i.value}
-  const answer=draft??saved
+  const answer=draft??saved??(i.kind==='scope_board'?{values:Object.fromEntries(i.cards.map(c=>[c.id,c.column]))}:null)
   async function send(action,value){
     setPending(true)
     try{if(await post(i.id,action,value)){if(action==='answer')setDraft(null);else setBody('')}}finally{setPending(false)}
@@ -27,6 +28,7 @@ export function Item({item:i,review,post}){
     {i.kind==='decision' && <>{i.options.map(o=><div key={o.id}><label><input type="radio" name={i.id} checked={(answer?.option??(!answer&&i.status==='defaulted'?i.default:undefined))===o.id} onChange={()=>{setDraft({option:o.id});send('answer',{option:o.id})}}/> {o.label}{o.recommended?' (recommended)':''}<small>{o.tradeoffs}</small></label>
     <button onClick={()=>setAnchor({type:'node',path:'option:'+o.id})}>Comment on {o.label}</button></div>)}
     {i.allow_other!==false && <label>Other <input value={answer?.other??''} onChange={e=>setDraft({other:e.target.value})}/></label>}</>}
+    <Catalog item={i} values={answer?.values??{}} change={values=>setDraft({values})} anchor={setAnchor}/>
     {i.kind==='html' && (open?<HtmlFrame review={review.id} item={i.id}/>:<pre>{JSON.stringify(i.value,null,2)}</pre>)}
     {i.kind==='claim' && i.claims.map(c=><label key={c.id}>{c.label} {c.evidence}<select value={answer?.values?.[c.id]??''} onChange={e=>rowValue(c.id,e.target.value)}><option value="">Choose state</option>{['verified','wrong','research'].map(s=><option key={s}>{s}</option>)}</select></label>)}
     {i.kind==='defaults' && i.defaults.map(d=><label key={d.id}>{d.label}<input placeholder={d.value} value={answer?.values?.[d.id]??d.value} onChange={e=>setDraft({values:{...Object.fromEntries(i.defaults.map(e=>[e.id,e.value])),...answer?.values,[d.id]:e.target.value}})}/></label>)}
