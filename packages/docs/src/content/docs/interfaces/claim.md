@@ -24,3 +24,5 @@ Save a state or value for each row before submitting the review.
   }
 }
 ```
+
+<img alt="Review controls for claim" src="../../screenshots/claim.png" />

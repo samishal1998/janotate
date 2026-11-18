@@ -24,3 +24,5 @@ Expand a named code block to review it and attach a comment.
   }
 }
 ```
+
+<img alt="Review controls for function overview" src="../../screenshots/function_overview.png" />

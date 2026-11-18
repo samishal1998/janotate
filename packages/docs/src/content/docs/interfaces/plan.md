@@ -29,3 +29,5 @@ Set a status on each outline node.
   }
 }
 ```
+
+<img alt="Review controls for plan" src="../../screenshots/plan.png" />

@@ -25,3 +25,5 @@ Move each card to its final scope column.
   }
 }
 ```
+
+<img alt="Review controls for scope board" src="../../screenshots/scope_board.png" />

@@ -18,3 +18,5 @@ Use a Mermaid flowchart with named nodes and arrows. Select a node or edge to co
   }
 }
 ```
+
+<img alt="Review controls for diagram" src="../../screenshots/diagram.png" />

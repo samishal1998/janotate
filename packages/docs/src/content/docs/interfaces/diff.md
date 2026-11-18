@@ -24,3 +24,5 @@ Select a step, expand a unified diff hunk and attach a comment. Save a ruling fo
   }
 }
 ```
+
+<img alt="Review controls for diff" src="../../screenshots/diff.png" />

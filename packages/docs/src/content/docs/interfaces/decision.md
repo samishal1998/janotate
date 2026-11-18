@@ -27,3 +27,5 @@ Example MCP tool call.
   }
 }
 ```
+
+<img alt="Review controls for decision" src="../../screenshots/decision.png" />

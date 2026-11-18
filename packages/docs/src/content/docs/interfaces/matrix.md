@@ -33,3 +33,5 @@ Adjust criterion weights, compare totals and choose an option.
   }
 }
 ```
+
+<img alt="Review controls for matrix" src="../../screenshots/matrix.png" />
