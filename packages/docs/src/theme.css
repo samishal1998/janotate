@@ -1,0 +1,2 @@
+:root {--sl-font:system-ui,sans-serif;--sl-color-text-accent:var(--sl-color-white);--janotate-logo:none}
+.site-title:before {content:var(--janotate-logo)}

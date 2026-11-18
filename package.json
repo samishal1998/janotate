@@ -1,0 +1,40 @@
+{
+  "name": "janotate",
+  "version": "0.0.0",
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "bin": {
+    "janotate": "bin/janotate.mjs"
+  },
+  "scripts": {
+    "build": "vite build packages/ui && cd packages/docs && ASTRO_TELEMETRY_DISABLED=1 astro build && cd ../.. && node scripts/build.mjs",
+    "test": "node --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.9",
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "hono": "4.13.14",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@astrojs/starlight": "0.42.6",
+    "astro": "7.4.0",
+    "playwright": "1.64.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "rolldown": "1.2.16",
+    "vite": "8.3.6"
+  },
+  "overrides": {
+    "rolldown": "1.2.16"
+  },
+  "files": [
+    "bin",
+    "dist"
+  ]
+}
