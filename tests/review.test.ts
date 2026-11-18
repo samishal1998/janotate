@@ -20,17 +20,26 @@ test('documented MCP calls, browser submission and restart',async()=>{
  await client.connect(new StreamableHTTPClientTransport(new URL('/mcp',origin)))
  await stdio.connect(new StdioClientTransport({command:process.execPath,args:[...args,'mcp']}))
  assert((await stdio.listTools()).tools.some(t=>t.name==='review_get'))
- let id='',url=''
+ let id='',url='',itemId=''
  const dir='packages/docs/src/content/docs'
- for(const f of ['reference/review_open.md','interfaces/decision.md','reference/review_wait.md','reference/review_status.md','reference/review_get.md']){
- const source=readFileSync(join(dir,f),'utf8'), example=JSON.parse(source.match(/```json\n([\s\S]+?)\n```/)[1].replace('$review_id',id))
+ for(const f of ['interfaces/claim.md','interfaces/defaults.md','reference/review_open.md','reference/item_update.md','interfaces/decision.md','reference/review_wait.md','reference/review_status.md','reference/review_get.md']){
+ const source=readFileSync(join(dir,f),'utf8'), example=JSON.parse(source.match(/```json\n([\s\S]+?)\n```/)[1].replace('$review_id',id).replace('$item_id',itemId))
  const r=await client.callTool(example)
  assert(!r.isError,JSON.stringify(r))
- if(example.name==='review_open'){id=r.structuredContent.review_id;url=r.structuredContent.url}
+ if(example.name==='review_open'){id=r.structuredContent.review_id;url=r.structuredContent.url;itemId=r.structuredContent.item_ids[0]}
  }
  browser=await chromium.launch()
  const page=await browser.newPage()
  await page.goto(url)
+ await page.getByRole('radio').first().check()
+ await page.getByRole('button',{name:'Comment on Markdown'}).click()
+ await page.getByRole('textbox',{name:'Comment on option:md'}).fill('Does this preserve history?')
+ await page.getByRole('button',{name:'Add comment'}).click()
+ await page.locator('li').filter({hasText:'Does this preserve history?'}).waitFor()
+ const update=await client.callTool({name:'item_update',arguments:{review_id:id,item_id:itemId,patch:{title:'Archive format?'},reply:'History is preserved.'}})
+ assert.equal(update.structuredContent.status,'asked')
+ await page.reload()
+ await page.getByText(/History is preserved/).waitFor()
  await page.getByRole('radio').first().check()
  await page.getByRole('button',{name:'Submit review'}).click()
  await page.getByText('Review submitted').waitFor()

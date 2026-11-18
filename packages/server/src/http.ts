@@ -22,7 +22,8 @@ export async function start(data,port,session,assets){
       return {...r,url:origin+'/review/'+r.review_id}
     }
     const id=args.review_id,store=locate(id)
-    if(name==='review_get')return store.result(id)
+    if(name==='item_update')return store.update(id,args.item_id,args.patch,args.reply,args.parent_id)
+    if(name==='review_get'){const r=store.result(id);return r.state==='open'?{...r,review:store.get(id)}:r}
     function counts(){
       const r=store.get(id),answered=r.items.filter(i=>i.value!==undefined).length,total=r.items.length
       return {asked:r.state==='done'?0:total-answered,answered,skipped:r.state==='done'?total-answered:0,last_activity:r.submitted_at??r.created_at,total}
@@ -43,6 +44,14 @@ export async function start(data,port,session,assets){
   app.onError((err,c)=>c.json({error:err.message},400))
   app.get('/health',c=>c.json({service:'Janotate',pid:process.pid}))
   app.get('/api/review/:id',c=>c.json(locate(c.req.param('id')).get(c.req.param('id'))))
+  app.post('/api/review/:id/items/:key/:action',async c=>{
+    if(c.req.header('origin')!==origin)return c.text('Forbidden',403)
+    const {id,key,action}=c.req.param(),input=await c.req.json(),store=locate(id)
+    if(action==='comments')store.addComment(id,key,input)
+    else if(action==='answer')store.save(id,key,input===null?null:submission.parse({[key]:input})[key])
+    else return c.notFound()
+    return c.json(store.get(id))
+  })
   app.post('/api/review/:id',async c=>{
     if(c.req.header('origin')!==origin || !c.req.header('content-type')?.startsWith('application/json'))return c.text('Forbidden',403)
     const id=c.req.param('id'),result=locate(id).submit(id,submission.parse(await c.req.json()))
