@@ -1,0 +1,47 @@
+name: Publish npm release
+on:
+  release:
+    types: [published]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Validate version and channel
+        env:
+          PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          node -e "const v=require('./package.json').version; if (v==='0.0.0'||process.env.GITHUB_REF_NAME!=='v'+v||String(v.includes('-'))!==process.env.PRERELEASE) process.exit(1)"
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run lint && npm run typecheck && npm run build && npm test && npm run test:wait
+      - run: npm pack --ignore-scripts && node tests/package.smoke.ts "$PWD/$(ls janotate-*.tgz)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npm-package
+          path: janotate-*.tgz
+          if-no-files-found: error
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - uses: actions/download-artifact@v4
+        with:
+          name: npm-package
+      - name: Publish verified tarball
+        env:
+          CHANNEL: ${{ github.event.release.prerelease && 'beta' || 'latest' }}
+        run: npm publish ./janotate-*.tgz --access public --provenance --tag "$CHANNEL"

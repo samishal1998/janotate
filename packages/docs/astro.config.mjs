@@ -1,7 +1,8 @@
 import { defineConfig } from 'astro/config'
 import starlight from '@astrojs/starlight'
 export default defineConfig({
-  base: '/docs/',
+  site: process.env.JANOTATE_PAGES ? 'https://samishal1998.github.io' : undefined,
+  base: process.env.JANOTATE_PAGES ? '/janotate/' : '/docs/',
   vite: {
     environments: {
       prerender: { resolve: { noExternal: ['@astrojs/starlight'] } },

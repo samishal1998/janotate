@@ -31,3 +31,9 @@ Open **Voice** beside **Appearance** in the header. Choose Kitten Nano or Kokoro
 On a diagram walkthrough or captioned Lottie animation, open the arrow beside **Play** and choose **Play with audio**. Janotate prepares one clip ahead and advances the diagram after each caption finishes. Full stops, line breaks and blank lines produce progressively longer pauses.
 
 Use `janotate voice status` to inspect the selection and local cache, `janotate voice install kokoro` for the optional Kokoro 82M pack, and `janotate voice off` to disable narration for this project. [Read aloud guide](packages/docs/src/content/docs/guides/read-aloud.md)
+
+## Documentation and releases
+
+[Public documentation](https://samishal1998.github.io/janotate/) deploys from main. The CLI also serves the same guide locally at `/docs/`.
+
+To release, update the root package version and lockfile, then publish a GitHub Release for its matching `v<version>` tag. Mark prerelease versions as GitHub prereleases to publish under the npm `beta` tag. Stable releases publish under `latest`. The workflow tests the packed CLI and publishes that same tarball. Configure the npm trusted publisher for `samishal1998/janotate` and workflow filename `release.yml` before using it.

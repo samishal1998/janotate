@@ -1,6 +1,8 @@
 {
   "name": "janotate",
   "version": "0.0.0",
+  "repository": { "type": "git", "url": "git+https://github.com/samishal1998/janotate.git" },
+  "homepage": "https://samishal1998.github.io/janotate/",
   "type": "module",
   "engines": {
     "node": "24.x"

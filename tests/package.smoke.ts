@@ -18,7 +18,7 @@ const root = mkdtempSync(join(tmpdir(), 'janotate-packed-')),
 const client = new Client({ name: 'package-test', version: '1' }),
   browser = await chromium.launch()
 try {
-  const pack = execFileSync(
+  const pack = process.argv[2] || execFileSync(
     'npm',
     ['pack', '--silent', '--pack-destination', root],
     { encoding: 'utf8' },
@@ -34,7 +34,7 @@ try {
       '--ignore-scripts',
       '--no-audit',
       '--no-fund',
-      join(root, pack),
+      resolve(root, pack),
     ],
     { cwd: root },
   )
