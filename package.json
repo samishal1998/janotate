@@ -1,7 +1,10 @@
 {
   "name": "janotate",
   "version": "0.0.0",
-  "repository": { "type": "git", "url": "git+https://github.com/samishal1998/janotate.git" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samishal1998/janotate.git"
+  },
   "homepage": "https://samishal1998.github.io/janotate/",
   "type": "module",
   "engines": {
@@ -42,6 +45,7 @@
     "@dagrejs/dagre": "3.1.3",
     "@dbml/parse": "12.1.0",
     "@lezer/highlight": "1.2.3",
+    "@samyx/publish-kit": "0.0.0-pre.1",
     "@tailwindcss/vite": "4.3.3",
     "@types/node": "24.19.2",
     "@types/react": "https://registry.npmjs.org/@types/react/-/react-19.2.18.tgz",

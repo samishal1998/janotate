@@ -22,6 +22,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run lint && npm run typecheck && npm run build && npm test && npm run test:wait
       - run: npm pack --ignore-scripts && node tests/package.smoke.ts "$PWD/$(ls janotate-*.tgz)"
+      - run: bash scripts/publish-release.sh ./janotate-*.tgz beta --dry-run
       - uses: actions/upload-artifact@v4
         with:
           name: npm-package
@@ -34,14 +35,17 @@ jobs:
       contents: read
       id-token: write
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
+      - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4
         with:
           name: npm-package
       - name: Publish verified tarball
         env:
           CHANNEL: ${{ github.event.release.prerelease && 'beta' || 'latest' }}
-        run: npm publish ./janotate-*.tgz --access public --provenance --tag "$CHANNEL"
+          NPM_CONFIG_PROVENANCE: "true"
+        run: bash scripts/publish-release.sh ./janotate-*.tgz "$CHANNEL" --publish

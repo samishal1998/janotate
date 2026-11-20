@@ -158,3 +158,7 @@ On Node 24.22.1, `npm run build`, `npm run typecheck`, `npm run lint -- --deny-w
 ## Paper crane motion example
 
 The Lottie interface page links to the original 7.2-second scene in `packages/docs/public/examples/paper-crane.json`. Its four named markers are guide stops. A live Janotate review on port 33419 played all 216 frames, sought to the lake marker, and selected frames 134–145 for annotation. Chromium also checked horizontal fit at 360 px and eight individual frames. `npm run build` passed. `node --test tests/lottie-review.test.ts tests/lottie-audio.test.ts` passed all five tests. The separate Skottie editor was unavailable locally.
+
+## Release publisher
+
+The GitHub release workflow uses @samyx/publish-kit 0.0.0-pre.1. Its one-member staging workspace contains the verified Janotate CLI package. A beta dry run selected one package and packed 178 files. A disposable loopback registry received and verified the publish-kit output, and `node tests/package.smoke.ts` passed against the tarball from that registry. Public npm publication is pending a versioned release and npm trusted-publisher setup.
