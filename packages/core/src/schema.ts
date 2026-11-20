@@ -1,4 +1,4 @@
-import { payloads } from './catalog.ts'
+import { payloads, walkthroughTargetsExist } from './catalog.ts'
 import { z } from 'zod'
 const text = z.string().trim().min(1).max(10000)
 const option = z.object({
@@ -86,9 +86,18 @@ const html = z.object({
     })
     .passthrough(),
 })
-const catalog = Object.entries(payloads).map(([kind, shape]) =>
-  z.object({ ...fields, kind: z.literal(kind), ...shape }),
-)
+const catalog = Object.entries(payloads).map(([kind, shape]) => {
+  const schema = z.object({ ...fields, kind: z.literal(kind), ...shape })
+  return kind === 'diagram'
+    ? schema.refine(
+        (version) => 'spec' in version && walkthroughTargetsExist(version),
+        {
+          path: ['walkthrough'],
+          message: 'Walkthrough targets must exist in the base diagram',
+        },
+      )
+    : schema
+})
 export const itemSchema = z.union([decision, claim, defaults, html, ...catalog])
 export const tools = {
   decisions_query: z.object({
@@ -96,6 +105,12 @@ export const tools = {
     kinds: z.array(text).default([]),
     tags: z.array(text).max(32).default([]),
     limit: z.number().int().min(1).max(100).default(20),
+  }),
+  discussion_reply: z.object({
+    review_id: z.uuid(),
+    item_id: z.uuid(),
+    parent_id: z.uuid(),
+    reply: text,
   }),
   item_update: z.object({
     review_id: z.uuid(),
@@ -114,6 +129,7 @@ export const tools = {
   review_status: z.object({ review_id: z.uuid() }),
   review_wait: z.object({
     review_id: z.uuid(),
+    after_comment: z.number().int().nonnegative().optional(),
     wait_seconds: z.number().int().min(1).max(45).default(45),
   }),
 }
@@ -122,14 +138,27 @@ export const submission = z.record(
   z.union([
     z.object({ option: text }),
     z.object({ other: text }),
+    z.object({ code: z.string().max(100000) }),
+    z.object({
+      format: z.literal('unified_diff'),
+      patch: z.string().max(500000),
+      base_revision: z.int().positive(),
+    }),
     z.object({ values: z.record(text, text) }),
   ]),
 )
 export const anchor = z.discriminatedUnion('type', [
   z.object({ type: z.literal('item') }),
-  z.object({ type: z.literal('node'), path: text }),
+  z.object({
+    type: z.literal('node'),
+    path: text,
+    ledger_id: z.string().regex(/^[a-f0-9]{12}$/).optional(),
+  }),
   z.object({
     type: z.literal('text'),
+    ledger_id: z.string().regex(/^[a-f0-9]{12}$/).optional(),
+    section_id: text.optional(),
+    start: z.number().int().nonnegative().optional(),
     exact: z.string().min(1).max(10000),
     prefix: z.string(),
     suffix: z.string(),

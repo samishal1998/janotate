@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import { lottieAnimation } from './lottie.ts'
+import { prReport } from './pr-review.ts'
 const text = z.string().trim().min(1).max(10000)
 const entry = z.object({ id: text, label: text })
 const list = (s) =>
@@ -12,23 +14,140 @@ const list = (s) =>
 export const columns = ['in scope', 'deferred', 'out of scope'] as const
 export const states = ['proposed', 'approved', 'revise'] as const
 const node: z.ZodType<any> = z.lazy(() =>
-  entry.extend({ children: z.array(node).optional() }),
+  entry.extend({
+    description: text.optional(),
+    deliverable: text.optional(),
+    children: z.array(node).optional(),
+  }),
 )
+const flowchart = text.refine((s) => {
+  try {
+    graph(s)
+    return true
+  } catch {
+    return false
+  }
+}, 'Expected flowchart with named nodes and arrows')
+const walkthrough = z
+  .array(
+    z.object({
+      label: z.string().trim().min(1).max(100),
+      description: z.string().trim().min(1).max(600),
+      targets: z
+        .array(
+          z
+            .string()
+            .max(160)
+            .regex(/^(node:[\w-]+|edge:[\w-]+->[\w-]+)$/),
+        )
+        .min(1)
+        .max(12)
+        .refine(
+          (targets) => new Set(targets).size === targets.length,
+          'Duplicate walkthrough target',
+        ),
+    }),
+  )
+  .min(1)
+  .max(32)
+export type WalkthroughStep = z.infer<typeof walkthrough>[number]
+export function walkthroughTargetsExist(version: {
+  spec?: string
+  walkthrough?: WalkthroughStep[]
+}) {
+  if (!version.walkthrough) return true
+  try {
+    const { nodes, edges } = graph(version.spec)
+    const paths = new Set([
+      ...nodes.map(([id]) => 'node:' + id),
+      ...edges.map(([a, b]) => 'edge:' + a + '->' + b),
+    ])
+    return version.walkthrough.every((step) =>
+      step.targets.every((target) => paths.has(target)),
+    )
+  } catch {
+    return false
+  }
+}
+const resources = z.record(
+  z.string(),
+  z.object({
+    kind: z.enum([
+      'Ingress',
+      'Service',
+      'Deployment',
+      'Pod',
+      'Job',
+      'Workflow',
+      'Trigger',
+      'Action',
+      'Environment',
+    ]),
+    detail: text.optional(),
+  }),
+)
+export const languages = z.enum(['javascript', 'typescript', 'json', 'text'])
 export const payloads = {
+  pr_review: { report: prReport },
+  dbml: {
+    source_text: z.string().min(1).max(100000),
+    baseline: z.string().max(100000).optional(),
+    filename: text.optional(),
+  },
+  proposal: {
+    sections: list(entry.extend({ body: z.string().min(1).max(100000) })),
+  },
+  ranking: { entries: list(entry.extend({ description: text.optional() })) },
+  range: {
+    scales: list(
+      entry
+        .extend({
+          min: z.int(),
+          max: z.int(),
+          step: z.int().positive().default(1),
+          initial: z.int(),
+          unit: text.optional(),
+        })
+        .refine(
+          (s) =>
+            s.min < s.max &&
+            s.initial >= s.min &&
+            s.initial <= s.max &&
+            (s.initial - s.min) % s.step === 0 &&
+            (s.max - s.min) % s.step === 0,
+          'Invalid range bounds or step',
+        ),
+    ),
+  },
+  code: { filename: text, language: languages, code: z.string().max(100000) },
   digest: { entries: list(entry.extend({ summary: text })) },
+  lottie: {
+    animation: lottieAnimation,
+    caption: z.string().trim().min(1).max(2000).optional(),
+  },
   diagram: {
-    spec: text.refine((s) => {
-      try {
-        graph(s)
-        return true
-      } catch {
-        return false
-      }
-    }, 'Expected flowchart with named nodes and arrows'),
+    spec: flowchart,
+    resources: resources.optional(),
+    walkthrough: walkthrough.optional(),
+    base_label: text.optional(),
+    variants: list(
+      entry
+        .extend({
+          spec: flowchart,
+          resources: resources.optional(),
+          walkthrough: walkthrough.optional(),
+          description: text.optional(),
+        })
+        .refine(walkthroughTargetsExist, {
+          path: ['walkthrough'],
+          message: 'Walkthrough targets must exist in this diagram variant',
+        }),
+    ).optional(),
   },
   diff: {
     steps: list(
       entry.extend({
+        language: languages.optional(),
         patch: z
           .string()
           .max(2000000)
@@ -36,8 +155,16 @@ export const payloads = {
       }),
     ),
   },
-  function_overview: { blocks: list(entry.extend({ code: text })) },
-  plan: { nodes: list(node) },
+  function_overview: {
+    blocks: list(entry.extend({ code: text, language: languages.optional() })),
+  },
+  plan: {
+    nodes: list(node).refine(
+      (nodes) =>
+        new Set(flatten(nodes).map((n) => n.id)).size === flatten(nodes).length,
+      'Plan node ids must be unique',
+    ),
+  },
   matrix: {
     options: list(entry.extend({ scores: z.record(z.string(), z.number()) })),
     criteria: list(entry.extend({ weight: z.number().nonnegative() })),
@@ -77,6 +204,32 @@ export function catalogAnswer(item, value) {
     rows.every((r) => Object.hasOwn(value, r.id) && allowed(value[r.id])) &&
     Object.keys(value).length === rows.length
   switch (item.kind) {
+    case 'pr_review':
+      return (
+        ['approve', 'request_changes', 'comment'].includes(value.verdict) &&
+        Object.keys(value).length === 1
+      )
+    case 'ranking': {
+      const ranks = item.entries.map((e) => value[e.id])
+      return (
+        keys(
+          item.entries,
+          (v) => /^[1-9]\d*$/.test(v) && Number(v) <= ranks.length,
+        ) && new Set(ranks).size === ranks.length
+      )
+    }
+    case 'range':
+      return (
+        item.scales.every(
+          (s) =>
+            Object.hasOwn(value, s.id) &&
+            String(Number(value[s.id])) === value[s.id] &&
+            Number.isSafeInteger(Number(value[s.id])) &&
+            Number(value[s.id]) >= s.min &&
+            Number(value[s.id]) <= s.max &&
+            (Number(value[s.id]) - s.min) % s.step === 0,
+        ) && Object.keys(value).length === item.scales.length
+      )
     case 'digest':
       return keys(
         item.entries,
@@ -101,6 +254,8 @@ export function catalogAnswer(item, value) {
         ) &&
         Object.keys(value).length === item.criteria.length + 1
       )
+    case 'proposal':
+    case 'lottie':
     case 'diagram':
     case 'function_overview':
       return value.review === 'reviewed' && Object.keys(value).length === 1

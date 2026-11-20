@@ -1,0 +1,86 @@
+.select-field {
+  display: grid;
+  justify-items: start;
+  gap: 0.375rem;
+}
+
+.select-field + .select-field {
+  margin-block-start: 0.875rem;
+}
+
+[data-slot='native-select-wrapper'] > [data-slot='native-select'] {
+  display: block;
+  box-sizing: border-box;
+  margin: 0;
+  padding-inline: 0.625rem 2.125rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+}
+
+[data-slot='native-select-icon'] {
+  inset-inline-end: 0.625rem;
+}
+
+@supports (appearance: base-select) {
+  @media (pointer: fine) {
+    [data-slot='native-select-wrapper'] > select,
+    [data-slot='native-select']::picker(select) {
+      appearance: base-select;
+    }
+
+    [data-slot='native-select-wrapper'] > [data-slot='native-select'] {
+      display: inline-flex;
+      align-items: center;
+      padding-block: 0.25rem 0;
+    }
+
+    [data-slot='native-select']::picker-icon {
+      display: none;
+    }
+
+    [data-slot='native-select']::picker(select) {
+      min-inline-size: anchor-size(inline);
+      max-inline-size: calc(100vw - 1.5rem);
+      max-block-size: min(18rem, 50vh);
+      margin-block: 0.25rem;
+      padding: 0.25rem;
+      overflow-y: auto;
+      border: 1px solid var(--line);
+      border-radius: 0.625rem;
+      background: var(--paper);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+    }
+
+    [data-slot='native-select-option'] {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: 2rem;
+      padding: 0.375rem 0.625rem;
+      border-radius: 0.375rem;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    [data-slot='native-select-option']:is(:focus-visible, :hover) {
+      outline-offset: -2px;
+      background: var(--surface);
+    }
+
+    [data-slot='native-select-option']:checked {
+      color: var(--accent);
+      background: var(--tint);
+    }
+
+    [data-slot='native-select-option']::checkmark {
+      order: 1;
+      margin-inline-start: auto;
+    }
+  }
+}

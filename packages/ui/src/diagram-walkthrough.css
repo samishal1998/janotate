@@ -1,0 +1,99 @@
+.graph-walkthrough {
+  padding: 14px 16px 0;
+  color: var(--ink);
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.walkthrough-bar,
+.walkthrough-position,
+.walkthrough-controls {
+  display: flex;
+  align-items: center;
+}
+.walkthrough-bar {
+  justify-content: space-between;
+  gap: 8px 16px;
+  flex-wrap: wrap;
+}
+.walkthrough-position {
+  gap: 7px;
+  font-size: 0.76rem;
+  font-weight: 650;
+  color: var(--stage-teal);
+}
+.walkthrough-position b {
+  margin-left: 3px;
+  padding-left: 10px;
+  border-left: 1px solid var(--line);
+  color: var(--muted);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.walkthrough-controls {
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.walkthrough-audio-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.graph-walkthrough .walkthrough-audio-status {
+  margin: 0 0 0.7rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.walkthrough-controls svg {
+  width: 15px;
+  height: 15px;
+}
+.walkthrough-caption {
+  margin: 9px 0 13px;
+  overflow-wrap: anywhere;
+}
+.walkthrough-caption strong {
+  font-size: 0.95rem;
+}
+.graph-walkthrough .walkthrough-caption p {
+  margin: 3px 0 0;
+  line-height: 1.45;
+  white-space: pre-line;
+}
+.walkthrough-progress {
+  display: flex;
+  gap: 3px;
+}
+.walkthrough-progress span {
+  flex: 1;
+  height: 3px;
+  background: var(--line);
+}
+.walkthrough-progress [data-complete='true'] {
+  background: var(--stage-teal);
+}
+.graph-card[data-walkthrough-active] {
+  border-color: var(--stage-teal);
+  background: var(--stage-teal-bg);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--stage-teal) 34%, transparent);
+}
+.graph-surface[data-walkthrough]:fullscreen {
+  display: flex;
+  flex-direction: column;
+}
+.graph-surface[data-walkthrough]:fullscreen .graph-viewport {
+  flex: 1;
+  min-height: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .graph-surface[data-walkthrough-playing]
+    .walkthrough-edge
+    .react-flow__edge-path {
+    stroke-dasharray: 7 4;
+    animation: diagram-flow 900ms linear infinite;
+  }
+  @keyframes diagram-flow {
+    to {
+      stroke-dashoffset: -11;
+    }
+  }
+}

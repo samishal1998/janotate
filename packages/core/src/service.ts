@@ -1,5 +1,4 @@
 import type { ReviewStore } from './store.ts'
-import { setTimeout as delay } from 'node:timers/promises'
 export function reviewService(
   workspace: ReviewStore,
   temporary: ReviewStore,
@@ -20,6 +19,8 @@ export function reviewService(
     }
     const id = args.review_id,
       store = locate(id)
+    if (name === 'discussion_reply')
+      return store.reply(id, args.item_id, args.parent_id, args.reply)
     if (name === 'item_update')
       return store.update(
         id,
@@ -52,9 +53,23 @@ export function reviewService(
     const start = Date.now(),
       end = start + args.wait_seconds * 1000
     let heartbeat = start + 5000
-    while (Date.now() < end) {
+    while (true) {
       if (store.state(id) !== 'open') return store.result(id)
-      await delay(Math.min(125, end - Date.now()), undefined, { signal })
+      if (args.after_comment !== undefined) {
+        const comments = store.reviewerComments(id, args.after_comment)
+        if (comments.length)
+          return {
+            state: 'discussion',
+            comments,
+            cursor: comments.at(-1).cursor,
+          }
+      }
+      if (Date.now() >= end) break
+      await store.waitForChange(
+        id,
+        Math.max(0, Math.min(heartbeat, end) - Date.now()),
+        signal,
+      )
       if (Date.now() >= heartbeat) {
         await progress(Math.floor((Date.now() - start) / 1000))
         heartbeat += 5000

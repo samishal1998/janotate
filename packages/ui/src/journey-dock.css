@@ -1,0 +1,365 @@
+.journey-dock {
+  flex: none;
+  min-width: 0;
+}
+.journey-dock .floating-guide {
+  container-type: inline-size;
+  display: flex;
+  align-content: flex-start;
+  align-items: stretch;
+  flex-direction: column;
+  gap: 0;
+  max-height: calc(100dvh - 16px);
+  padding: 10px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink);
+}
+.journey-dock .floating-guide[data-placement='docked'] {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  min-width: 0;
+  margin: 8px 0 14px;
+  box-shadow: none;
+}
+.journey-dock .floating-guide[data-placement='floating'] {
+  border-color: var(--control);
+  box-shadow: 0 10px 32px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+.journey-dock .guide-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 2px;
+  min-width: 0;
+}
+.journey-dock .guide-head button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-width: 28px;
+  min-height: 28px;
+  margin: 0;
+  border: 0;
+  border-radius: 6px;
+  padding: 2px 4px;
+  background: transparent;
+  color: var(--muted);
+}
+.journey-dock .guide-head button:not(.grip):hover,
+.journey-dock .guide-head button:not(.grip):focus-visible {
+  color: var(--accent);
+  background: var(--tint);
+}
+.journey-dock .guide-head .grip {
+  gap: 6px;
+  min-width: 0;
+  padding-inline: 0 3px;
+}
+.journey-dock .grip .guide-grip-dots {
+  color: var(--muted);
+}
+.journey-dock .grip strong {
+  display: inline;
+  color: var(--ink);
+  font-size: 0.87rem;
+  font-weight: 650;
+}
+.journey-dock .guide-head .guide-placement {
+  margin-inline-start: auto;
+}
+.journey-dock button:not(.grip) {
+  touch-action: manipulation;
+}
+.journey-dock button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+.guide-chevron-up,
+.guide-back-arrow {
+  transform: rotate(180deg);
+}
+.journey-dock .guide-content {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+  padding-top: 7px;
+}
+.journey-dock [data-slot='native-select-wrapper'] {
+  width: 100%;
+}
+.journey-dock [data-slot='native-select'] {
+  white-space: nowrap;
+  font-weight: 550;
+}
+.journey-dock .guide-active {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  border-inline-start: 2px solid var(--accent);
+  padding: 2px 0 2px 8px;
+  margin-block: 3px;
+}
+.journey-dock .guide-item-name {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  overflow-wrap: anywhere;
+  font-size: 0.73rem;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.journey-dock .guide-item-name svg {
+  margin-top: 2px;
+}
+.journey-dock .guide-active .guide-stop {
+  display: block;
+  max-height: none;
+  overflow: visible;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  color: var(--ink);
+  font-size: 0.87rem;
+  line-height: 1.4;
+  font-weight: 600;
+}
+.journey-dock .guide-stop-state {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.journey-dock .guide-stop-state > span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.journey-dock .guide-stop-state button,
+.journey-dock .guide-browse {
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  min-height: 28px;
+  font: 550 0.77rem/1.35 var(--jn-font-body);
+}
+.journey-dock .guide-stop-state button:hover,
+.journey-dock .guide-browse:hover {
+  background: var(--tint);
+}
+.journey-dock .guide-browse {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  margin: 0;
+  padding: 3px 4px;
+}
+.journey-dock .guide-browse > svg:last-child {
+  margin-inline-start: auto;
+}
+.journey-dock .guide-outline {
+  display: grid;
+  grid-auto-rows: max-content;
+  align-content: start;
+  gap: 2px;
+  max-height: min(36dvh, 17rem);
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--control) transparent;
+  overscroll-behavior: contain;
+  min-width: 0;
+  border-block: 1px solid var(--line);
+  padding: 4px 0;
+}
+.journey-dock .guide-outline > small {
+  display: block;
+  padding: 6px 3px 4px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.4;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+.journey-dock .guide-outline > button {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  min-width: 0;
+  height: auto;
+  min-height: 36px;
+  margin: 0;
+  padding: 6px 7px;
+  border: 0;
+  border-radius: 6px;
+  white-space: normal;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  text-align: start;
+  background: transparent;
+}
+.journey-dock .guide-outline > button span {
+  display: block;
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.78rem;
+  line-height: 1.38;
+  font-weight: 500;
+}
+.journey-dock .guide-outline > button small {
+  display: block;
+  font-size: 0.7rem;
+  line-height: 1.3;
+  font-weight: 400;
+  color: var(--muted);
+}
+.journey-dock .guide-outline > button:hover {
+  background: var(--surface);
+}
+.journey-dock .guide-outline > button[aria-current='step'] {
+  background: var(--tint);
+  box-shadow: inset 2px 0 var(--accent);
+}
+.journey-dock .guide-outline > button[aria-current='step'] span {
+  color: var(--accent);
+  font-weight: 650;
+}
+.journey-dock .guide-progress {
+  width: 100%;
+  height: 3px;
+  appearance: none;
+  border: 0;
+  border-radius: 9px;
+  overflow: hidden;
+  background: var(--line);
+  accent-color: var(--accent);
+}
+.journey-dock .guide-progress::-webkit-progress-bar {
+  background: var(--line);
+}
+.journey-dock .guide-progress::-webkit-progress-value {
+  background: var(--accent);
+}
+.journey-dock .guide-progress::-moz-progress-bar {
+  background: var(--accent);
+}
+.journey-dock .guide-steps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+  border-top: 1px solid var(--line);
+  padding-top: 7px;
+}
+.journey-dock .guide-progress + .guide-steps {
+  border-top: 0;
+  padding-top: 0;
+}
+.journey-dock .guide-steps > span {
+  margin: 0 auto 0 0;
+  font-size: 0.73rem;
+  line-height: 1.4;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.journey-dock .guide-steps button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 29px;
+  border: 0;
+  border-radius: 6px;
+  padding: 4px 7px;
+  font: 600 0.73rem/1.1 var(--jn-font-body);
+  white-space: nowrap;
+}
+.journey-dock .guide-steps button:first-of-type {
+  min-width: 25px;
+  padding: 4px;
+  color: var(--ink);
+  background: var(--surface);
+}
+.journey-dock .guide-steps button:last-child {
+  background: var(--tint);
+  color: var(--accent);
+}
+.journey-dock .guide-steps button:not(:disabled):hover {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.journey-dock .guide-steps button:disabled {
+  background: var(--surface);
+  color: var(--muted);
+  opacity: 0.7;
+}
+.journey-dock .guide-steps [hidden] {
+  display: none;
+}
+.review-item [data-guide-current] {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  scroll-margin-block: 1rem;
+}
+.guide-drop {
+  display: grid;
+  place-items: center;
+  min-height: 3rem;
+  margin-block: 8px 14px;
+  border: 1px dashed var(--control);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 0.81rem;
+}
+.guide-drop[data-over='true'] {
+  border-color: var(--accent);
+  background: var(--tint);
+  color: var(--accent);
+}
+@container (max-width:145px) {
+  .journey-dock .guide-browse {
+    white-space: nowrap;
+    justify-content: flex-start;
+  }
+  .journey-dock .guide-browse > svg:first-child,
+  .journey-dock .guide-steps button:last-child > svg {
+    display: none;
+  }
+  .journey-dock .guide-steps button {
+    padding-inline: 4px;
+    gap: 2px;
+  }
+  .journey-dock .guide-steps button:first-of-type {
+    min-width: 22px;
+  }
+}
+@media (max-width: 700px) {
+  .journey-dock .floating-guide[data-placement='docked'] {
+    margin: 0 0 8px;
+    padding: 4px 9px;
+  }
+  .journey-dock .floating-guide[data-placement='docked']:not(.compact) {
+    padding-bottom: 9px;
+  }
+}
+@media (pointer: coarse) {
+  .journey-dock .guide-head button,
+  .journey-dock .guide-steps button,
+  .journey-dock .guide-browse,
+  .journey-dock .guide-stop-state button,
+  .journey-dock .guide-outline > button {
+    min-height: 44px;
+  }
+  .journey-dock .guide-head button,
+  .journey-dock .guide-steps button:first-of-type {
+    min-width: 44px;
+  }
+}

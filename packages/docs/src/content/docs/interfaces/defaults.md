@@ -1,7 +1,9 @@
 ---
 title: defaults
 ---
-Save a state or value for each row before submitting the review.
+Confirm the suggested values or type replacements, then save the defaults together.
+
+<img alt="Shift handoff defaults with an edited receipt retention period" src="../../screenshots/defaults.png" />
 
 ```json
 {
@@ -10,13 +12,23 @@ Save a state or value for each row before submitting the review.
     "title": "Project choices",
     "items": [
       {
-        "title": "Project choices",
+        "title": "Set the shift handoff defaults",
         "kind": "defaults",
         "defaults": [
           {
             "id": "format",
             "label": "Export format",
             "value": "Markdown"
+          },
+          {
+            "id": "retention",
+            "label": "Keep local receipts for",
+            "value": "7 days"
+          },
+          {
+            "id": "owner",
+            "label": "Escalation owner",
+            "value": "Shift lead"
           }
         ]
       }
@@ -24,5 +36,3 @@ Save a state or value for each row before submitting the review.
   }
 }
 ```
-
-<img alt="Review controls for defaults" src="../../screenshots/defaults.png" />

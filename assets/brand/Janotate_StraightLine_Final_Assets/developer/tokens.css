@@ -1,0 +1,13 @@
+/* Janotate brand palette: visual reference tokens, not exact source-image samples. */
+:root {
+  --janotate-bg-dark: #0B1636;
+  --janotate-ink: #0E1532;
+  --janotate-purple: #B92AF0;
+  --janotate-violet: #8355FF;
+  --janotate-blue: #2666FF;
+  --janotate-cyan: #22D3EE;
+  --janotate-silver: #E5E9F4;
+  --janotate-bg-light: #F5F7FC;
+  --janotate-white: #FFFFFF;
+  --janotate-brand-gradient: linear-gradient(100deg, #B92AF0 0%, #8355FF 40%, #2666FF 68%, #22D3EE 100%);
+}

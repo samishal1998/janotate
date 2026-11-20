@@ -1,8 +1,11 @@
 import { decisionLog } from './log.ts'
+import { prLocation } from './pr-review.ts'
+import { prQuoteOffset } from './pr-passage.ts'
 import { payloads, catalogAnswer } from './catalog.ts'
 import { itemSchema, commentInput, type ItemInput } from './schema.ts'
 import { DatabaseSync } from 'node:sqlite'
 import { randomUUID } from 'node:crypto'
+import { dbmlText, dbmlPatch, type DbmlPatch } from './dbml-patch.ts'
 
 export function openStore(path: string, exportFolder?: string) {
   const db = new DatabaseSync(path)
@@ -25,16 +28,47 @@ export function openStore(path: string, exportFolder?: string) {
   db.exec(`CREATE TABLE IF NOT EXISTS evidence(id TEXT PRIMARY KEY,item_id TEXT NOT NULL REFERENCES item(id),label TEXT NOT NULL,url TEXT);
   CREATE TRIGGER IF NOT EXISTS activity_item AFTER UPDATE ON item BEGIN UPDATE review SET last_activity=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=NEW.review_id; END;
   CREATE TRIGGER IF NOT EXISTS activity_comment AFTER INSERT ON comment BEGIN UPDATE review SET last_activity=NEW.created_at WHERE id=(SELECT review_id FROM item WHERE id=NEW.item_id); END;`)
+  if (!columns('review').includes('version'))
+    db.exec('ALTER TABLE review ADD COLUMN version INTEGER NOT NULL DEFAULT 0')
+  db.exec(`CREATE TRIGGER IF NOT EXISTS review_version AFTER UPDATE OF last_activity,state ON review
+    BEGIN UPDATE review SET version=version+1 WHERE id=NEW.id; END;`)
+  const listeners = new Map<string, Set<() => void>>()
+  function announce(id: string) {
+    for (const wake of listeners.get(id) ?? []) wake()
+  }
+  function waitForChange(
+    id: string,
+    milliseconds: number,
+    signal?: AbortSignal,
+  ) {
+    signal?.throwIfAborted()
+    return new Promise<void>((resolve, reject) => {
+      const group = listeners.get(id) ?? new Set()
+      listeners.set(id, group)
+      function finish() {
+        clearTimeout(timer)
+        group.delete(finish)
+        if (!group.size) listeners.delete(id)
+        signal?.removeEventListener('abort', finish)
+        if (signal?.aborted) reject(signal.reason)
+        else resolve()
+      }
+      const timer = setTimeout(finish, milliseconds)
+      group.add(finish)
+      signal?.addEventListener('abort', finish, { once: true })
+    })
+  }
   const log = decisionLog(db, exportFolder)
-  function comments(id: string) {
+  function comments(id: string, after = 0, reviewerOnly = false) {
     return db
       .prepare(
-        'SELECT c.* FROM comment c JOIN item i ON i.id=c.item_id WHERE i.review_id=? ORDER BY c.rowid',
+        "SELECT c.rowid AS cursor,c.* FROM comment c JOIN item i ON i.id=c.item_id WHERE i.review_id=? AND c.rowid>? AND (?=0 OR c.author='user') ORDER BY c.rowid",
       )
-      .all(id)
+      .all(id, after, Number(reviewerOnly))
       .map(({ anchor_json, ...row }) => ({
         ...row,
         id: String(row.id),
+        cursor: Number(row.cursor),
         item_id: String(row.item_id),
         anchor: JSON.parse(String(anchor_json)),
       }))
@@ -121,13 +155,33 @@ export function openStore(path: string, exportFolder?: string) {
     const c = commentInput.parse(input)
     if (item.kind === 'html' && c.anchor.type !== 'item')
       throw Error('invalid_items: HTML requires an item anchor')
-    if (
+    const parent =
       c.parent_id &&
-      !db
-        .prepare('SELECT id FROM comment WHERE item_id=? AND id=?')
+      db
+        .prepare('SELECT anchor_json FROM comment WHERE item_id=? AND id=?')
         .get(key, c.parent_id)
-    )
-      throw Error('not_found: parent_id')
+    if (c.parent_id && !parent) throw Error('not_found: parent_id')
+    if (item.kind === 'pr_review') {
+      if (parent) c.anchor = JSON.parse(String(parent.anchor_json))
+      else if (c.anchor.type !== 'item') {
+        if (
+          (c.anchor.ledger_id && c.anchor.ledger_id !== item.report.ledgerId) ||
+          (c.anchor.type === 'node' && !prLocation(item.report, c.anchor.path))
+        )
+          throw Error(
+            'invalid_items: choose evidence from the current PR report',
+          )
+        if (c.anchor.type === 'text') {
+          const offset = prQuoteOffset(item.report, c.anchor)
+          if (offset < 0)
+            throw Error(
+              'invalid_items: choose a passage from the current PR report',
+            )
+          c.anchor.start = offset
+        }
+        c.anchor.ledger_id = item.report.ledgerId
+      }
+    }
     db.prepare('INSERT INTO comment VALUES(?,?,?,?,?,?,?,?)').run(
       randomUUID(),
       key,
@@ -160,6 +214,18 @@ export function openStore(path: string, exportFolder?: string) {
         throw Error('invalid_items: answer')
       value = custom ? answer.other : answer.option
       if (recommended && (custom || recommended.id !== value))
+        status = 'corrected'
+    } else if (item.kind === 'dbml' && answer.format === 'unified_diff') {
+      const edited = dbmlText(item, answer)
+      value = dbmlPatch(item, edited)
+      if (value.patch !== answer.patch)
+        throw Error('Invalid DBML patch for this revision')
+      if (value.patch) status = 'corrected'
+    } else if (item.kind === 'code' || item.kind === 'dbml') {
+      if (typeof answer.code !== 'string' || answer.code.length > 100000)
+        throw Error('invalid_items: code')
+      value = answer.code
+      if (value !== (item.kind === 'dbml' ? item.source_text : item.code))
         status = 'corrected'
     } else if (Object.hasOwn(payloads, item.kind)) {
       value = answer.values
@@ -202,6 +268,28 @@ export function openStore(path: string, exportFolder?: string) {
     ).run(JSON.stringify(value), key)
   }
   return {
+    waitForChange,
+    recentOpenReviews(limit: number, now: string) {
+      return db
+        .prepare(
+          `
+        SELECT r.id, r.title, r.state, r.mode,
+               coalesce(r.last_activity, r.created_at) AS updated_at,
+               (SELECT count(*) FROM item i WHERE i.review_id=r.id) AS item_count
+          FROM review r
+         WHERE r.state='open' AND (r.expires_at IS NULL OR r.expires_at>?)
+         ORDER BY updated_at DESC, r.id ASC LIMIT ?
+      `,
+        )
+        .all(now, limit)
+        .map((row) => ({
+          ...row,
+          id: String(row.id),
+          updated_at: String(row.updated_at),
+        }))
+    },
+    reviewerComments: (id: string, after: number) => comments(id, after, true),
+    version: (id: string) => Number(rowFor(id).version),
     has: (id: string) =>
       Boolean(db.prepare('SELECT 1 FROM review WHERE id=?').get(id)),
     state: (id: string) => rowFor(id).state,
@@ -210,17 +298,41 @@ export function openStore(path: string, exportFolder?: string) {
       db.prepare(
         "UPDATE review SET state='cancelled',last_activity=? WHERE id=?",
       ).run(new Date().toISOString(), id)
+      announce(id)
       return get(id)
     },
     query: log.query,
     flush: log.flush,
     get,
     result,
-    save,
-    acceptHtml,
-    addComment,
+    save(id, key, answer) {
+      save(id, key, answer)
+      announce(id)
+    },
+    acceptHtml(id, key, revision, value) {
+      acceptHtml(id, key, revision, value)
+      announce(id)
+    },
+    addComment(id, key, input) {
+      addComment(id, key, input)
+      announce(id)
+    },
+    reply(id, key, parent, body) {
+      const thread = comments(id).find(
+        (c) => c.item_id === key && c.id === parent,
+      )
+      if (!thread) throw Error('not_found: parent_id')
+      addComment(
+        id,
+        key,
+        { body, anchor: thread.anchor, parent_id: parent },
+        'agent',
+      )
+      announce(id)
+      return { parent_id: parent, item_id: key }
+    },
     update(id, key, patch, reply, parent) {
-      return atomic(() => {
+      const updated = atomic(() => {
         const old = current(id, key)
         const body = db
           .prepare('SELECT body_json FROM item WHERE id=?')
@@ -255,8 +367,13 @@ export function openStore(path: string, exportFolder?: string) {
         ).run(revised.title, JSON.stringify(revised), key)
         return current(id, key)
       })
+      announce(id)
+      return updated
     },
-    close: () => db.close(),
+    close: () => {
+      for (const id of listeners.keys()) announce(id)
+      db.close()
+    },
     open(title: string, items: ItemInput[], mode: string, ttl?: number) {
       return atomic(() => {
         db.prepare(
@@ -316,20 +433,41 @@ export function openStore(path: string, exportFolder?: string) {
         string,
         | { option: string }
         | { other: string }
+        | { code: string }
+        | DbmlPatch
         | { values: Record<string, string> }
       >,
     ) {
-      return atomic(() => {
+      const submitted = atomic(() => {
         const review = get(id)
         if (review.state !== 'open') throw Error('review_closed')
         for (const [key, answer] of Object.entries(answers))
           save(id, key, answer)
+        // Older browsers saved DBML drafts as text. Finalize those drafts
+        // against their original revision when the review first closes.
+        for (const item of review.items) {
+          if (item.kind !== 'dbml') continue
+          const incoming = answers[item.id]
+          const text = incoming
+            ? 'code' in incoming
+              ? incoming.code
+              : null
+            : item.value
+          if (typeof text === 'string') {
+            db.prepare('UPDATE item SET value_json=? WHERE id=?').run(
+              JSON.stringify(dbmlPatch(item, text)),
+              item.id,
+            )
+          }
+        }
         db.prepare(
           "UPDATE review SET state='done',submitted_at=? WHERE id=?",
         ).run(new Date().toISOString(), id)
         log.record(get(id))
         return result(id)
       })
+      announce(id)
+      return submitted
     },
   }
 }

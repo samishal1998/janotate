@@ -1,7 +1,9 @@
 ---
 title: function_overview
 ---
-Expand a named code block to review it and attach a comment.
+Expand a named code block to read it with syntax highlighting. Choose **Comment on block** to attach a discussion to that function.
+
+<img alt="Expanded Page title function with highlighted TypeScript and its block comment control" src="../../screenshots/function_overview.png" />
 
 ```json
 {
@@ -11,12 +13,19 @@ Expand a named code block to review it and attach a comment.
     "items": [
       {
         "kind": "function_overview",
-        "title": "function overview",
+        "title": "Build the shift summary",
         "blocks": [
           {
             "id": "title",
             "label": "Page title",
-            "code": "function title() { return \"Janotate\" }"
+            "language": "typescript",
+            "code": "function title(crew: string, pending: number) {\n  const status = pending ? `${pending} pending` : \"all delivered\";\n  return `${crew} · ${status}`;\n}"
+          },
+          {
+            "id": "receipt",
+            "label": "Receipt status",
+            "language": "typescript",
+            "code": "function receiptStatus(acceptedAt?: string) {\n  return acceptedAt ? \"Delivered\" : \"Waiting for receipt\";\n}"
           }
         ]
       }
@@ -24,5 +33,3 @@ Expand a named code block to review it and attach a comment.
   }
 }
 ```
-
-<img alt="Review controls for function overview" src="../../screenshots/function_overview.png" />

@@ -1,0 +1,36 @@
+@import './Janotate_StraightLine_Final_Assets/developer/tokens.css';
+/* Theme roles shared by the review app and documentation. */
+:root {
+  --jn-obsidian: var(--janotate-bg-dark);
+  --jn-ink: var(--janotate-ink);
+  --jn-electric-blue: var(--janotate-blue);
+  --jn-indigo: #4F46E5;
+  --jn-violet: var(--janotate-violet);
+  --jn-cyan: var(--janotate-cyan);
+  --jn-soft-silver: var(--janotate-silver);
+  --jn-white: var(--janotate-white);
+  --jn-slate: #5E6882;
+  --jn-panel: var(--janotate-bg-light);
+  --jn-success: #17B887;
+  --jn-gradient-brand: var(--janotate-brand-gradient);
+  --jn-gradient-glow: linear-gradient(90deg, #2563FF 0%, #22D3EE 48%, #8B5CF6 100%);
+  --jn-font-display: 'Inter Display', Inter, system-ui, sans-serif;
+  --jn-font-body: Inter, system-ui, sans-serif;
+  --jn-radius-card: 18px;
+  --jn-radius-control: 12px;
+  --jn-focus-ring: 0 0 0 3px rgba(37,99,255,.22);
+}
+[data-theme='dark'] {
+  --jn-bg: #090F22;
+  --jn-surface: #101A39;
+  --jn-text: #F4F7FF;
+  --jn-muted: #ACB8D4;
+  --jn-border: #263357;
+}
+[data-theme='light'] {
+  --jn-bg: #FFFFFF;
+  --jn-surface: #F6F8FE;
+  --jn-text: #10162E;
+  --jn-muted: #5E6882;
+  --jn-border: #E5E9F4;
+}

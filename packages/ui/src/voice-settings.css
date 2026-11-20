@@ -1,0 +1,167 @@
+.voice-settings-trigger {
+  flex: none;
+  min-height: 32px;
+}
+
+.voice-settings-dialog {
+  position: fixed;
+  inset: 0;
+  width: min(26rem, calc(100vw - 1.5rem));
+  max-width: none;
+  max-height: calc(100dvh - 1.5rem);
+  margin: auto;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  color: var(--ink);
+  background: var(--paper);
+  box-shadow: 0 16px 55px color-mix(in srgb, var(--rail) 35%, transparent);
+}
+
+.voice-settings-dialog::backdrop {
+  background: color-mix(in srgb, var(--rail) 56%, transparent);
+}
+
+.voice-settings-panel {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1rem, 4vw, 1.4rem);
+}
+
+.voice-settings-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.voice-settings-heading h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.35;
+}
+
+.voice-settings-heading p,
+.voice-settings-note {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.voice-settings-options {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.voice-settings-option {
+  display: grid;
+  grid-template-columns: 1.125rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 3rem;
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  cursor: pointer;
+}
+
+.voice-settings-option[data-picked] {
+  border-color: var(--accent);
+  background: var(--tint);
+}
+.voice-settings-option[data-unavailable] {
+  cursor: default;
+  color: var(--muted);
+}
+.voice-settings-option:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.voice-settings-option input[type='radio'] {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+  accent-color: var(--action);
+}
+.voice-settings-label {
+  display: grid;
+  gap: 0.05rem;
+}
+.voice-settings-label strong {
+  font-size: 0.925rem;
+}
+.voice-settings-label small {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.voice-settings-current {
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+.voice-settings-note {
+  margin: 0;
+}
+.voice-provider-fields {
+  display: grid;
+  gap: .65rem;
+  min-width: 0;
+  margin: 0;
+  padding: .75rem;
+  border: 1px solid var(--line);
+  border-radius: .65rem;
+}
+.voice-provider-fields legend, .voice-provider-fields label {
+  font-size: .84rem;
+  font-weight: 600;
+}
+.voice-provider-fields label {
+  display: grid;
+  gap: .25rem;
+}
+.voice-provider-fields button {
+  justify-self: start;
+}
+.voice-settings-error {
+  margin: 0;
+  color: var(--removed);
+  font-size: 0.875rem;
+}
+.voice-settings-progress {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.voice-settings-progress:empty {
+  display: none;
+}
+.voice-settings-progress span {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.voice-settings-footer {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+@media (max-width: 420px) {
+  .voice-settings-trigger {
+    padding-inline: .35rem;
+  }
+  .voice-settings-trigger > svg {
+    display: none;
+  }
+}

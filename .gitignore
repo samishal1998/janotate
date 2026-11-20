@@ -3,3 +3,6 @@ dist/
 .astro/
 .janotate/*
 !.janotate/decisions/
+
+# Local brand handoff archives and superseded artwork
+/branding/

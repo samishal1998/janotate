@@ -1,8 +1,32 @@
-:root {
-  --sl-font: system-ui, sans-serif;
-  --sl-color-text-accent: var(--sl-color-white);
-  --janotate-logo: none;
+@import '../../../assets/brand/tokens.css';
+
+:root, :root[data-theme='dark'], :root[data-theme='light'] {
+  --sl-font: var(--jn-font-body);
+  --sl-color-bg: var(--jn-bg);
+  --sl-color-bg-nav: var(--jn-surface);
+  --sl-color-bg-sidebar: var(--jn-bg);
+  --sl-color-text: var(--jn-text);
+  --sl-color-hairline: var(--jn-border);
+  --sl-color-hairline-light: var(--jn-border);
 }
-.site-title:before {
-  content: var(--janotate-logo);
+:root[data-theme='dark'] {
+  --sl-color-bg: #303b4b;
+  --sl-color-bg-nav: #3c485a;
+  --sl-color-bg-sidebar: #354052;
+  --sl-color-text: #e1e7ef;
+  --sl-color-hairline: #58667a;
+  --sl-color-hairline-light: #58667a;
+  --sl-color-accent: var(--jn-violet);
+  --sl-color-accent-high: var(--jn-cyan);
+  --sl-color-accent-low: #46536a;
+  --sl-color-text-accent: var(--jn-cyan);
+  --sl-color-text-invert: var(--jn-obsidian);
 }
+:root[data-theme='light'] {
+  --sl-color-accent: var(--jn-electric-blue);
+  --sl-color-accent-high: var(--jn-indigo);
+  --sl-color-accent-low: var(--jn-panel);
+  --sl-color-text-accent: var(--jn-indigo);
+}
+h1, h2, h3 { font-family: var(--jn-font-display); }
+header.header { border-top: 3px solid var(--jn-electric-blue); }

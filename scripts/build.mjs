@@ -9,12 +9,17 @@ import {
 } from 'node:fs'
 import { join } from 'node:path'
 const bundle = await rolldown({
-  input: 'packages/server/src/cli.ts',
+  input: {
+    server: 'packages/server/src/cli.ts',
+    'voice-worker': 'packages/server/src/voice-worker.mjs',
+  },
   platform: 'node',
   external: (id) => !id.startsWith('.') && !id.startsWith('/'),
 })
-await bundle.write({ file: 'dist/server.mjs', format: 'esm' })
+await bundle.write({ dir: 'dist', entryFileNames: '[name].mjs', format: 'esm' })
 await bundle.close()
+cpSync('skills/janotate', 'dist/agent/janotate', { recursive: true })
+cpSync('packages/docs/src/content/docs/interfaces', 'dist/agent/interfaces', { recursive: true })
 for (const pkg of ['ui', 'docs']) {
   rmSync('dist/' + pkg, { recursive: true, force: true })
   cpSync('packages/' + pkg + '/dist', 'dist/' + pkg, { recursive: true })

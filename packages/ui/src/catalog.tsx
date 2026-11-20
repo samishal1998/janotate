@@ -1,28 +1,59 @@
-import { Diagram } from './diagram'
+import { NativeSelect, NativeSelectOption } from './components/ui/native-select'
+import { Proposal } from './proposal'
+import { Ranking, Ranges, ScopeBoard } from './interactive-inputs'
 import React, { useState } from 'react'
-import { columns, states } from '../../core/src/catalog'
-export function Catalog({ item, values, change, anchor }) {
+import { Plan } from './plan'
+const Diagram = React.lazy(() =>
+  import('./diagram').then((m) => ({ default: m.Diagram })),
+)
+const DiffView = React.lazy(() => import('./diff-view'))
+const MotionReview = React.lazy(() => import('./motion-review'))
+const PrReview = React.lazy(() => import('./pr-review'))
+export const CodeEditor = React.lazy(() => import('./code-editor'))
+export function Catalog({
+  item,
+  values,
+  change,
+  anchor,
+  selection,
+  threads,
+  open,
+}) {
   const [step, setStep] = useState(0)
+  React.useEffect(() => {
+    if (item.kind !== 'diff' || !selection.path?.startsWith('hunk:')) return
+    const id = selection.path.slice(5, selection.path.lastIndexOf(':'))
+    const index = item.steps.findIndex((s) => s.id === id)
+    if (index >= 0) setStep(index)
+  }, [item.kind, selection])
   const mark = (path, label) => (
-    <button onClick={() => anchor({ type: 'node', path })}>{label}</button>
+    <button
+      data-annotation-target
+      disabled={!open}
+      onClick={() => anchor({ type: 'node', path })}
+    >
+      {label}
+    </button>
   )
   const select = (id, label, choices, initial = '') => (
-    <label key={id}>
-      {label}
-      <select
+    <label key={id} className="select-field">
+      <span>{label}</span>
+      <NativeSelect
+        disabled={!open}
         value={values[id] ?? initial}
         onChange={(e) => change({ ...values, [id]: e.target.value })}
       >
-        <option value="">Choose</option>
+        <NativeSelectOption value="">Choose</NativeSelectOption>
         {choices.map((v) => (
-          <option key={v}>{v}</option>
+          <NativeSelectOption key={v}>{v}</NativeSelectOption>
         ))}
-      </select>
+      </NativeSelect>
     </label>
   )
   const reviewed = (
     <label>
       <input
+        disabled={!open}
         type="checkbox"
         checked={values.review === 'reviewed'}
         onChange={(e) => change(e.target.checked ? { review: 'reviewed' } : {})}
@@ -31,11 +62,31 @@ export function Catalog({ item, values, change, anchor }) {
     </label>
   )
   switch (item.kind) {
+    case 'pr_review':
+      return (
+        <React.Suspense fallback={<p>Opening pull request…</p>}>
+          <PrReview
+            key={item.report.ledgerId}
+            {...{ item, values, change, anchor, selection, threads, open }}
+          />
+        </React.Suspense>
+      )
+    case 'ranking':
+      return <Ranking {...{ item, values, change, open }} />
+    case 'range':
+      return <Ranges {...{ item, values, change, open }} />
+    case 'proposal':
+      return (
+        <>
+          <Proposal {...{ item, anchor, selection, threads, open }} />
+          {reviewed}
+        </>
+      )
     case 'digest':
       return (
         <>
           {item.entries.map((e) => (
-            <section key={e.id}>
+            <section key={e.id} data-guide-path={'entry:' + e.id}>
               <h3>{e.label}</h3>
               <p>{e.summary}</p>
               <button onClick={() => change({ ...values, [e.id]: 'approve' })}>
@@ -62,34 +113,55 @@ export function Catalog({ item, values, change, anchor }) {
           ))}
         </>
       )
+    case 'lottie':
+      return (
+        <>
+          <React.Suspense fallback={<p>Opening animation…</p>}>
+            <MotionReview
+              item={item}
+              anchor={anchor}
+              selection={selection}
+              open={open}
+            />
+          </React.Suspense>
+          {reviewed}
+        </>
+      )
     case 'diagram':
       return (
         <>
-          <Diagram spec={item.spec} anchor={anchor} />
+          <React.Suspense fallback={<p>Opening diagram…</p>}>
+            <Diagram item={item} anchor={anchor} selection={selection} />
+          </React.Suspense>
           {reviewed}
         </>
       )
     case 'diff': {
-      const active = item.steps[step],
-        hunks = active.patch
-          .split(/^(?=@@ )/m)
-          .filter((s) => s.startsWith('@@ '))
+      const active = item.steps[step]
       return (
         <>
           <nav aria-label="Change steps">
             {item.steps.map((s, n) => (
-              <button key={s.id} onClick={() => setStep(n)}>
+              <button
+                key={s.id}
+                aria-pressed={step === n}
+                onClick={() => {
+                  setStep(n)
+                  anchor({ type: 'item' })
+                }}
+              >
                 {s.label}
               </button>
             ))}
           </nav>
-          {hunks.map((h, n) => (
-            <Hunk
-              key={active.id + ':' + n}
-              patch={h}
-              button={mark('hunk:' + active.id + ':' + n, 'Comment on hunk')}
+          <React.Suspense fallback={<p>Loading diff…</p>}>
+            <DiffView
+              key={active.id}
+              step={active}
+              mark={mark}
+              selection={selection}
             />
-          ))}
+          </React.Suspense>
           {select(active.id, active.label, ['approved', 'revise'])}
         </>
       )
@@ -98,31 +170,35 @@ export function Catalog({ item, values, change, anchor }) {
       return (
         <>
           {item.blocks.map((b) => (
-            <details key={b.id}>
+            <details key={b.id} data-guide-path={'block:' + b.id}>
               <summary>{b.label}</summary>
-              <pre>{b.code}</pre>
+              <React.Suspense fallback={<pre>{b.code}</pre>}>
+                <CodeEditor
+                  filename={b.label}
+                  language={b.language ?? 'javascript'}
+                  value={b.code}
+                  readOnly
+                  change={undefined}
+                />
+              </React.Suspense>
               {mark('block:' + b.id, 'Comment on block')}
             </details>
           ))}
           {reviewed}
         </>
       )
-    case 'plan': {
-      function tree(nodes) {
-        return (
-          <ul>
-            {nodes.map((n) => (
-              <li key={n.id}>
-                {select(n.id, n.label, states)}{' '}
-                {mark('node:' + n.id, 'Comment on node')}
-                {n.children && tree(n.children)}
-              </li>
-            ))}
-          </ul>
-        )
-      }
-      return tree(item.nodes)
-    }
+    case 'plan':
+      return (
+        <Plan
+          item={item}
+          values={values}
+          change={change}
+          anchor={anchor}
+          selection={selection}
+          threads={threads}
+          open={open}
+        />
+      )
     case 'matrix':
       return (
         <table>
@@ -131,7 +207,7 @@ export function Catalog({ item, values, change, anchor }) {
             <tr>
               <th>Option</th>
               {item.criteria.map((c) => (
-                <th key={c.id}>
+                <th key={c.id} data-guide-path={'weight:' + c.id}>
                   <label>
                     {c.label}
                     <input
@@ -153,7 +229,7 @@ export function Catalog({ item, values, change, anchor }) {
           </thead>
           <tbody>
             {item.options.map((o) => (
-              <tr key={o.id}>
+              <tr key={o.id} data-guide-path={'option:' + o.id}>
                 <th>
                   <label>
                     <input
@@ -194,38 +270,8 @@ export function Catalog({ item, values, change, anchor }) {
         </table>
       )
     case 'scope_board':
-      return (
-        <div className="board">
-          {columns.map((col) => (
-            <section key={col}>
-              <h3>{col}</h3>
-              {item.cards
-                .filter((c) => (values[c.id] ?? c.column) === col)
-                .map((c) => (
-                  <div key={c.id}>
-                    {select(c.id, c.label, columns, c.column)}
-                    <p>{c.reason}</p>
-                  </div>
-                ))}
-            </section>
-          ))}
-        </div>
-      )
+      return <ScopeBoard {...{ item, values, change, open }} />
     default:
       return null
   }
-}
-function Hunk({ patch, button }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <details onToggle={(e) => setOpen(e.currentTarget.open)}>
-      <summary>{patch.split('\n', 1)[0]}</summary>
-      {open && (
-        <>
-          <pre>{patch}</pre>
-          {button}
-        </>
-      )}
-    </details>
-  )
 }

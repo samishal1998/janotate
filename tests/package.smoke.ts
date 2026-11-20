@@ -39,6 +39,15 @@ try {
     { cwd: root },
   )
   assert(!existsSync(join(root, 'node_modules/astro')))
+  assert(existsSync(join(root, 'node_modules/janotate/dist/voice-worker.mjs')))
+  assert(!existsSync(join(root, 'node_modules/sherpa-onnx-node')))
+  const guidance = execFileSync(
+    'npx',
+    ['--offline', 'janotate', 'context', 'pr_review', '--json'],
+    { cwd: root, encoding: 'utf8' },
+  )
+  assert.equal(JSON.parse(guidance).uri, 'janotate://items/pr_review')
+  assert(!existsSync(lock))
   const started = Date.now(),
     origin = execFileSync('npx', ['--offline', 'janotate', '--no-open'], {
       cwd: root,
@@ -67,10 +76,30 @@ try {
   assert(elapsed < 10000)
   await page.getByRole('link', { name: 'Documentation' }).click()
   await page.getByRole('heading', { name: 'Quick start' }).waitFor()
+  await page.goto(origin + '/docs/guides/read-aloud/')
+  await page.getByRole('heading', { name: 'Read aloud', exact: true }).waitFor()
+  const pr = JSON.parse(
+    execFileSync(
+      'npx',
+      ['--offline', 'janotate', 'review-pr', '--example', '--json'],
+      { cwd: root, encoding: 'utf8' },
+    ),
+  )
+  assert.equal(new URL(pr.url).origin, origin)
+  await page.goto(pr.url)
+  await page
+    .locator('.kind-pr_review')
+    .getByRole('button', { name: /^Findings/ })
+    .click()
+  await page
+    .getByRole('heading', {
+      name: 'A failed receipt write leaves a duplicate on retry',
+    })
+    .waitFor()
   console.log(
     'Packed npx to rendered decision:',
     elapsed,
-    'ms; packaged documentation rendered',
+    'ms; packaged documentation, agent context and PR example verified',
   )
 } finally {
   await client.close()

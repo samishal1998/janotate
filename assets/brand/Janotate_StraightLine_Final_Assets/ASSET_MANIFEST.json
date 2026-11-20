@@ -1,0 +1,316 @@
+{
+  "identity": "Janotate",
+  "version": "straight-line-approved-v2",
+  "primary_asset": "masters/approved-app-icon.png",
+  "created": "2026-11-19",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "76f53dc722a5309d6805c89385dc14c530e51bb0d12052a29b3e622398086230",
+      "bytes": 2399
+    },
+    {
+      "path": "app-icons/android-chrome-192x192.png",
+      "sha256": "c735c0c10176d1967c0d6fd72140a8e82c7338ba9252e0016b5fc48509b5f88c",
+      "bytes": 49959,
+      "width": 192,
+      "height": 192,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/android-chrome-512x512.png",
+      "sha256": "997b5f008cdce6675a50c9d82090f9fe01735e1d265ea8f873b4d705f22bf68c",
+      "bytes": 264852,
+      "width": 512,
+      "height": 512,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/apple-touch-icon.png",
+      "sha256": "8eb2c8e49e9503ec834e794e58ce3edbbc23c1f44d55fe43452fb2cdd56d47b1",
+      "bytes": 44938,
+      "width": 180,
+      "height": 180,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/favicon.ico",
+      "sha256": "506e8ad6786e53d95a8a7428123866f607f774f3719a821c0ccc37236c54a27b",
+      "bytes": 18030,
+      "width": 64,
+      "height": 64,
+      "format": "ICO",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/janotate-app-1024x1024.png",
+      "sha256": "15ccb6ee9bc1f723fff95b2f000e1cf3ca7e32d80284a3d091fc57d9d8dd47b7",
+      "bytes": 889920,
+      "width": 1024,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/janotate-app-128x128.png",
+      "sha256": "18572a94e707a6284d100f57185852f0f77ad119fe22d0dec16996d75c8fab33",
+      "bytes": 25440,
+      "width": 128,
+      "height": 128,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/janotate-app-16x16.png",
+      "sha256": "6a6bf9fd9b5f4ccf76045821199fda35fd1988c83da852450f284c2c5f21b57a",
+      "bytes": 778,
+      "width": 16,
+      "height": 16,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/janotate-app-180x180.png",
+      "sha256": "8eb2c8e49e9503ec834e794e58ce3edbbc23c1f44d55fe43452fb2cdd56d47b1",
+      "bytes": 44938,
+      "width": 180,
+      "height": 180,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/janotate-app-192x192.png",
+      "sha256": "c735c0c10176d1967c0d6fd72140a8e82c7338ba9252e0016b5fc48509b5f88c",
+      "bytes": 49959,
+      "width": 192,
+      "height": 192,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/janotate-app-24x24.png",
+      "sha256": "35ee14968eb8b56e36187a99d5a9c4e154eb9903186b1c58d88cda4a7f1bdb2e",
+      "bytes": 1507,
+      "width": 24,
+      "height": 24,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/janotate-app-256x256.png",
+      "sha256": "0b1208af6d65af32fd07ff5098bf2eb07d82c6b6690154b85f24844555455f1b",
+      "bytes": 80478,
+      "width": 256,
+      "height": 256,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/janotate-app-32x32.png",
+      "sha256": "1835de375ea69d0ff32445ab33dfc7262ab56b8e2f90cbba72021a97f968dfe0",
+      "bytes": 2514,
+      "width": 32,
+      "height": 32,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/janotate-app-384x384.png",
+      "sha256": "2e1d9a43bcd4a100cd29123996c9e575d1177b16a2ea88b2930b5f2aa9126993",
+      "bytes": 163435,
+      "width": 384,
+      "height": 384,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/janotate-app-48x48.png",
+      "sha256": "fc8e1d482bb02773ec9011260c7035439417a2bccd2792184382cbdf2caa9efc",
+      "bytes": 4987,
+      "width": 48,
+      "height": 48,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/janotate-app-512x512.png",
+      "sha256": "997b5f008cdce6675a50c9d82090f9fe01735e1d265ea8f873b4d705f22bf68c",
+      "bytes": 264852,
+      "width": 512,
+      "height": 512,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/janotate-app-64x64.png",
+      "sha256": "47f03f4f3d659a9deac157b13b5093c9c5b3c7f4af27a67db52906830b240f00",
+      "bytes": 8081,
+      "width": 64,
+      "height": 64,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "app-icons/janotate-app-96x96.png",
+      "sha256": "48208c61826386d957eaa47b16093278662d0f6d90262ab8dbf9c144bda3617a",
+      "bytes": 15856,
+      "width": 96,
+      "height": 96,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "developer/colors.json",
+      "sha256": "038a7a9491f66cd8990c876d6ac802b218251d7332b212ace532798a781360e1",
+      "bytes": 386
+    },
+    {
+      "path": "developer/site.webmanifest",
+      "sha256": "6ec41f194dcf54835bde4f1e891726d317a6659ba37487e36ddc8b8129517e10",
+      "bytes": 444
+    },
+    {
+      "path": "developer/tokens.css",
+      "sha256": "a7e2e12c6685172da6da4c39a3b25e87fad8282900c5f3483a5ea4dc77bcc3ef",
+      "bytes": 468
+    },
+    {
+      "path": "logos/janotate-deep-navy-monochrome.png",
+      "sha256": "e6013b7dfb83951807d6be54cfccaaeeb5307dcb15180ee2c3583cc9985e4952",
+      "bytes": 771548,
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGBA"
+    },
+    {
+      "path": "logos/janotate-emblem-on-dark.png",
+      "sha256": "925cccd37ef49f1912af8702b5856c3447ac0378ae88786846976cac6423de3f",
+      "bytes": 951745,
+      "width": 1400,
+      "height": 1400,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "logos/janotate-emblem-on-light.png",
+      "sha256": "dcf72fa30950378e0939ec66cdd6827ded7db12dc804d9f17b73a80f2f370f3c",
+      "bytes": 985163,
+      "width": 1400,
+      "height": 1400,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "logos/janotate-horizontal-lockup.png",
+      "sha256": "fa076d81ad73f98fff20451d48fc5f6e52d49e667277befea157f55d5242440f",
+      "bytes": 487597,
+      "width": 1448,
+      "height": 1086,
+      "format": "PNG",
+      "mode": "RGBA"
+    },
+    {
+      "path": "logos/janotate-transparent-emblem-1024.png",
+      "sha256": "158a3f91dd32be91ca15122658091a0bb29a9954a51fbc6336d273a341462e1b",
+      "bytes": 809431,
+      "width": 1024,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA"
+    },
+    {
+      "path": "logos/janotate-transparent-emblem-128.png",
+      "sha256": "64ceab3d6f090740f318961d23680c10db64f2df1121585917a3bb42aab5e2ea",
+      "bytes": 26825,
+      "width": 128,
+      "height": 128,
+      "format": "PNG",
+      "mode": "RGBA"
+    },
+    {
+      "path": "logos/janotate-transparent-emblem-256.png",
+      "sha256": "b0b2518d37b8c161ddaf8ff7ca881cf93a5767cafc595ec8bc0ec4ada02d0841",
+      "bytes": 81408,
+      "width": 256,
+      "height": 256,
+      "format": "PNG",
+      "mode": "RGBA"
+    },
+    {
+      "path": "logos/janotate-transparent-emblem-512.png",
+      "sha256": "974939912e3b414992cbd5ad6cfe821535d5c17f324ede0cf29ccd7eb44c3738",
+      "bytes": 249260,
+      "width": 512,
+      "height": 512,
+      "format": "PNG",
+      "mode": "RGBA"
+    },
+    {
+      "path": "masters/approved-app-icon.png",
+      "sha256": "61c2b7a42454df4c9016c03f0a0ce14ec18f063438c553b5a7ab927c4479e57f",
+      "bytes": 1407446,
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "masters/horizontal-wordmark.png",
+      "sha256": "fa076d81ad73f98fff20451d48fc5f6e52d49e667277befea157f55d5242440f",
+      "bytes": 487597,
+      "width": 1448,
+      "height": 1086,
+      "format": "PNG",
+      "mode": "RGBA"
+    },
+    {
+      "path": "masters/latest-app-icon-variant.png",
+      "sha256": "9092d872eeb4b60060ade32cec333368ee89979fac5069fd376cea47cd955fe4",
+      "bytes": 1513343,
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "masters/monochrome-deep-navy-emblem.png",
+      "sha256": "e6013b7dfb83951807d6be54cfccaaeeb5307dcb15180ee2c3583cc9985e4952",
+      "bytes": 771548,
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGBA"
+    },
+    {
+      "path": "masters/transparent-color-emblem.png",
+      "sha256": "22fb35bb8e0fb4030849610241493076b1dc37334a41f92610be949203519731",
+      "bytes": 1249752,
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGBA"
+    },
+    {
+      "path": "previews/brand-assets-overview.png",
+      "sha256": "78038406249864701421a6976592e2c4991a9636f88df021d54fba1b7e602f9b",
+      "bytes": 527031,
+      "width": 1500,
+      "height": 1050,
+      "format": "PNG",
+      "mode": "RGB"
+    },
+    {
+      "path": "social/janotate-open-graph-1200x630.png",
+      "sha256": "8e43e96641f9f00e8f21a928f155c5c7c795d8bd1029742a41fe0f102919f947",
+      "bytes": 297696,
+      "width": 1200,
+      "height": 630,
+      "format": "PNG",
+      "mode": "RGB"
+    }
+  ]
+}

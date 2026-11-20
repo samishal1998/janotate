@@ -1,0 +1,75 @@
+.pr-review {
+  position: relative;
+}
+.pr-annotation-hint {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--stage-violet) 22%, var(--line));
+  border-radius: 0.5rem;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--stage-violet-bg) 56%, var(--paper));
+  font-size: 0.84rem;
+}
+.pr-annotation-hint > svg {
+  flex: none;
+  align-self: flex-start;
+  margin-top: 0.15rem;
+  color: var(--stage-violet);
+}
+.pr-review [data-pr-location] {
+  scroll-margin-block: 1.5rem;
+  overflow-wrap: anywhere;
+}
+.pr-review [data-pr-current],
+.pr-review [data-pr-location]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.pr-review mark[role='button'] {
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--stage-violet-bg);
+  border-bottom: 2px solid var(--stage-violet);
+  box-decoration-break: clone;
+}
+.pr-review mark[data-current='true'] {
+  outline: 1px solid var(--stage-violet);
+  outline-offset: 1px;
+}
+.pr-review .pr-thread-pin,
+.pr-review .pr-passage-comment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  gap: 0.22rem;
+  margin-inline-start: 0.3rem;
+  padding: 0.15rem 0.35rem;
+  line-height: 1;
+  font-size: 0.7rem;
+  font-weight: 600;
+  min-height: 1.6rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--accent);
+  border-radius: 0.35rem;
+}
+.pr-review .pr-passage-comment {
+  min-width: 1.6rem;
+}
+.pr-review .pr-thread-pin {
+  color: var(--stage-violet);
+  background: var(--stage-violet-bg);
+  border-color: color-mix(in srgb, var(--stage-violet) 30%, var(--line));
+}
+@media (pointer: coarse) {
+  .pr-review .pr-passage-comment,
+  .pr-review .pr-thread-pin {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
+}

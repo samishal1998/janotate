@@ -1,0 +1,15 @@
+{
+  "name": "Janotate",
+  "palette": {
+    "backgroundDark": "#0B1636",
+    "ink": "#0E1532",
+    "purple": "#B92AF0",
+    "violet": "#8355FF",
+    "blue": "#2666FF",
+    "cyan": "#22D3EE",
+    "silver": "#E5E9F4",
+    "backgroundLight": "#F5F7FC",
+    "white": "#FFFFFF"
+  },
+  "note": "Suggested tokens based on visual concept; raster masters contain their own rendered gradients."
+}

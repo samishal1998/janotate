@@ -1,22 +1,25 @@
 ---
 title: diff
 ---
-Select a step, expand a unified diff hunk and attach a comment. Save a ruling for every step.
+Expand a hunk to inspect the line numbers and coloured changes. Toggle split and unified views, annotate a hunk, and save one ruling per step.
+
+<img alt="Receipt lookup patch with additions and deletions in split view" src="../../screenshots/diff.png" />
 
 ```json
 {
   "name": "review_open",
   "arguments": {
-    "title": "Review a change",
+    "title": "Field Notes pilot",
     "items": [
       {
         "kind": "diff",
-        "title": "diff",
+        "title": "Inspect the receipt lookup",
         "steps": [
           {
-            "id": "title",
-            "label": "Show the project name",
-            "patch": "@@ -1 +1 @@\n-<title>Review</title>\n+<title>Janotate</title>"
+            "id": "receipts",
+            "label": "sync.ts",
+            "language": "typescript",
+            "patch": "@@ -12,3 +12,5 @@\n function sync(note: Note) {\n-  return store.write(note);\n+  const receipt = store.findReceipt(note.id);\n+  if (receipt) return receipt;\n+  return store.writeOnce(note);\n }"
           }
         ]
       }
@@ -24,5 +27,3 @@ Select a step, expand a unified diff hunk and attach a comment. Save a ruling fo
   }
 }
 ```
-
-<img alt="Review controls for diff" src="../../screenshots/diff.png" />

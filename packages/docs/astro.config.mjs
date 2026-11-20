@@ -10,6 +10,8 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Janotate',
+      logo: { src: '../../assets/brand/Janotate_StraightLine_Final_Assets/logos/janotate-transparent-emblem-128.png', alt: '' },
+      favicon: '/janotate-icon-32.png',
       customCss: ['./src/theme.css'],
       sidebar: [
         { label: 'Start', items: [{ label: 'Quick start', slug: '' }] },
