@@ -9,6 +9,8 @@ The workspace lists open reviews and lets you resume the latest one. **Connect y
 
 Configure your MCP client's stdio command as `npx janotate mcp` in the same directory, or connect to the printed URL with the path `/mcp`. Ask your agent to [open a review](./reference/review_open/). Follow its review link, choose an answer, and submit. Unanswered items are skipped.
 
+Give your coding agent the [plain-text setup instructions](./llms.txt) to connect it to your workspace.
+
 The [agent setup guide](./agents/workflow/) includes the installable project skill, offline CLI reference and pull request example.
 
 The agent can [wait for submission](./reference/review_wait/) or [fetch the result](./reference/review_get/) after a restart. The SQLite file in the project data directory contains your review content. Treat it as sensitive.

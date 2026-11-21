@@ -357,6 +357,7 @@ export async function start(data, port, session, assets, hosting?: Hosting) {
       if (statSync(file).isDirectory()) file = resolve(file, 'index.html')
       const mime = {
         '.html': 'text/html',
+        '.txt': 'text/plain; charset=utf-8',
         '.js': 'text/javascript',
         '.css': 'text/css',
         '.png': 'image/png',

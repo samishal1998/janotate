@@ -1,0 +1,37 @@
+# Janotate
+
+> Janotate is a local-first review app. A coding agent opens a typed review over MCP, a developer annotates it in the browser, and the agent receives structured answers.
+
+## Set up a project
+
+Use Node.js 24.x with npm. Work from the project directory so the agent and browser use the same workspace.
+
+1. Run `node -v` to check the runtime. Run `npx --yes janotate --no-open` to start or find the project server. Give the developer the workspace URL printed by the command.
+2. Connect one MCP transport. For Streamable HTTP, copy the exact endpoint from **Connect your agent** on the workspace home page. The port is assigned locally. For a hosted workspace, put the operator-provided bearer token in the client's secret settings.
+3. For stdio, configure the client to launch `npx` in the project directory with the arguments below. This is a common JSON client format. Use the equivalent server entry if your client uses a different configuration format.
+
+```json
+{
+  "mcpServers": {
+    "janotate": {
+      "command": "npx",
+      "args": ["--yes", "janotate", "mcp"]
+    }
+  }
+}
+```
+
+If the client starts in another directory, append `--data` and the absolute path to the project's Janotate data directory (normally `.janotate`) to the arguments. Use the same directory when starting the browser workspace.
+
+## Verify the connection
+
+List the server's MCP tools and confirm that `review_open` is present. Read `janotate://agent/workflow` for the review loop and `janotate://agent/catalog` for available item types. For an offline shell reference, run `npx --yes janotate context decision`. To install the optional project skill, run `npx --yes janotate skill install`.
+
+When the developer is ready, open a review, share the returned URL, and keep its review ID. Use `review_wait` with `after_comment` starting at zero. Reply to anchored comments before advancing the cursor. On submission, read the answers, comments, and skipped items.
+
+## Documentation
+
+- [Quick start](https://samishal1998.github.io/janotate/): Start the workspace and submit a first review.
+- [Agent workflow](https://samishal1998.github.io/janotate/agents/workflow/): Configure transports, discover resources, and resume a review.
+- [Open a review](https://samishal1998.github.io/janotate/reference/review_open/): Tool arguments and a working example.
+- [Wait for feedback](https://samishal1998.github.io/janotate/reference/review_wait/): Handle discussion and submission.
